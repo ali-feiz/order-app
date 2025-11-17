@@ -1,0 +1,6 @@
+$border-radius-root: 0.25rem;
+
+@forward 'vuetify/settings' with (
+	$body-font-family: 'Vazir' !default,
+	$main-transition: none,
+);
