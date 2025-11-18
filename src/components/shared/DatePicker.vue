@@ -1,49 +1,48 @@
 <template>
-  <v-container class="date-picker-container" :style="containerStyle">
-    <div class="date-picker-wrapper">
-      <v-text-field
-        v-model="displayDate"
-        :label="computedLabel"
-        :placeholder="computedPlaceholder"
-        :readonly="readonly"
-        :disabled="disabled"
-        :required="required"
-        :error="hasError"
-        :error-messages="errorMessages"
-        class="date-input"
-        @click="handleInputClick"
-      />
-
-      <v-btn
-        v-if="showClearButton"
-        icon
-        size="small"
-        variant="text"
-        class="clear-button"
-        :disabled="disabled"
-        @click="handleClear"
-      >
-        <v-icon size="small">mdi-close</v-icon>
-      </v-btn>
-    </div>
-
-    <PersianDatePicker
-      v-model="selectedDate"
-      :format="format"
-      :display-format="displayFormat"
+  <div class="date-picker-wrapper">
+    <v-text-field
+      v-model="displayDate"
+      :label="computedLabel"
+      :placeholder="computedPlaceholder"
+      :readonly="readonly"
       :disabled="disabled"
-      auto-submit
-      custom-input=".date-input"
-      no-input
-      @change="handleDateChange"
+      :required="required"
+      :error="hasError"
+      :error-messages="errorMessages"
+      class="date-input"
+      @click="handleInputClick"
     />
-  </v-container>
+
+    <v-btn
+      v-if="showClearButton"
+      icon
+      size="small"
+      variant="text"
+      class="clear-button"
+      :disabled="disabled"
+      @click="handleClear"
+    >
+      <v-icon size="small">mdi-close</v-icon>
+    </v-btn>
+  </div>
+
+  <PersianDatePicker
+    v-model="selectedDate"
+    :format="format"
+    :display-format="displayFormat"
+    :disabled="disabled"
+    auto-submit
+    custom-input=".date-input"
+    no-input
+    @change="handleDateChange"
+  />
 </template>
 
 <script setup>
 import { ref, computed, watch } from "vue";
 import PersianDatePicker from "vue3-persian-datetime-picker";
 import i18n from "@/plugins/i18n";
+import moment from "moment-jalaali";
 
 const { t } = i18n.global;
 
@@ -82,7 +81,6 @@ const props = defineProps({
   },
   maxWidth: {
     type: String,
-    default: "400px",
   },
   clearable: {
     type: Boolean,
@@ -128,10 +126,6 @@ const computedPlaceholder = computed(
   () => props.placeholder || t("shared.selectDate")
 );
 
-const containerStyle = computed(() => ({
-  maxWidth: props.maxWidth,
-}));
-
 const showClearButton = computed(
   () => props.clearable && displayDate.value && !props.disabled
 );
@@ -147,7 +141,9 @@ watch(
   (newValue) => {
     selectedDate.value = newValue;
     if (newValue) {
-      displayDate.value = newValue;
+      displayDate.value = moment(newValue, props.format).format(
+        props.displayFormat
+      );
     } else {
       displayDate.value = "";
     }
@@ -199,20 +195,6 @@ const handleClear = () => {
 </script>
 
 <style scoped>
-.date-picker-container {
-  padding: 16px;
-}
-
-.date-picker-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.date-input {
-  width: 100%;
-}
-
 .clear-button {
   position: absolute;
   left: 9px;
