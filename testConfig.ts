@@ -15,6 +15,18 @@ pinia.use(piniaPluginPersistedstate);
 const app = createApp(App);
 app.use(pinia);
 
+Object.defineProperty(window, "visualViewport", {
+  value: {
+    width: 1024,
+    height: 768,
+    scale: 1,
+    pageTop: 0,
+    pageLeft: 0,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  },
+});
+
 export function installPinia(options?: Partial<TestingOptions>) {
   const globalConfigBackup = structuredClone(config.global);
   beforeAll(() => {
